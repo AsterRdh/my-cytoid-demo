@@ -1,0 +1,36 @@
+.double-side-box-font, .double-side-box-back{
+    height: 100%;
+    width: 100%;
+    perspective: 300px;
+
+}
+.double-side-box-font .double-side-box-inner{
+    transform: rotateY(0deg);
+}
+
+
+.double-side-box-back .double-side-box-inner{
+    transform: rotateY(180deg);
+}
+
+.double-side-box-inner{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.font-box, .back-box{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.back-box{
+    transform: rotateY(180deg);
+}

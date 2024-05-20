@@ -1,0 +1,81 @@
+.login-page{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.login-page-inner{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}
+
+.login-page-left{
+    transition-duration: 0.2s;
+}
+
+.login-page-right, .login-page-right-active{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition-duration: 0.2s;
+    perspective: 300px;
+    overflow: hidden;
+}
+.login-page-right-active .lr-box-mask{
+    transform: rotateY(180deg);
+}
+
+.lr-box-mask{
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+
+
+.login-box, .register-box{
+    border-radius: 15px;
+    padding: 15px;
+    max-width: 37ch;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+.login-box {
+    background-color: #282c34;
+
+}
+.register-box{
+    background-color: #322834;
+
+    transform: rotateY(180deg);
+}
+.MuiFormHelperText-root{
+    transition-duration: 0.2s;
+}
+.password-strong-box,.password-strong-box-left,.password-strong-box-right{
+    flex: 1;
+    border: #FFFFFF 1px solid;
+}
+.password-strong-box-left{
+    border-right: 0;
+}
+.password-strong-box-right{
+    border-left:  0;
+}
+.password-strong-box-border{
+    display: flex;
+    height: 12px;
+    width: 100%;
+    position: absolute;
+    z-index: 2;
+}
+.password-strong-box-color{
+    height: 12px;
+    position: absolute;
+    z-index: 1;
+    transition-duration: 0.2s;
+}
+
+

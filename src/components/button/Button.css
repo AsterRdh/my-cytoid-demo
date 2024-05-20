@@ -1,0 +1,8 @@
+.head-button{
+    font-size: medium;
+    transition-duration: 0.1s;
+    transition-property: font-size;
+}
+.head-button:active{
+    font-size: small;
+}
