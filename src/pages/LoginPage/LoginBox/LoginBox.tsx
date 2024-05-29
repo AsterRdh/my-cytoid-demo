@@ -14,6 +14,7 @@ import {
     Link
 } from "@mui/material";
 import {GitHub, Google, Key, Person, Visibility, VisibilityOff} from "@mui/icons-material";
+import {Md5} from "ts-md5";
 
 export interface LoginData{
     userName:string
@@ -80,7 +81,7 @@ export default function LoginBox ({onLogin,changeCadeSide,onRef}:LoginBoxProps){
         }
         onLogin({
             userName:username.value,
-            password:password.value,
+            password:Md5.hashStr(password.value),
             recaptchaToken:token || ''
         });
 

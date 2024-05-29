@@ -3,8 +3,10 @@ import {Box, Button, FormControl, FormHelperText, IconButton, Input, InputAdornm
 import {Key, Person, Visibility, VisibilityOff} from "@mui/icons-material";
 import ReCAPTCHA from "react-google-recaptcha";
 import {ErrorType} from "../../../interface/Pages";
-import {deepOrange, lightGreen, yellow} from "@mui/material/colors";
+import {deepOrange, green, lightGreen, yellow} from "@mui/material/colors";
 import '../LoginPage.css'
+import {checkEmail, checkPassword} from "../../../utils/TextChecker";
+import {Md5} from "ts-md5";
 
 export interface RegisterData{
     userName:string
@@ -50,6 +52,8 @@ export default function RegisterBox({onRegister,changeCadeSide,onRef}:RegisterBo
         event.preventDefault();
         let token = recaptchaRef.current?.getValue();
         let hasError = false
+
+        //检查人机认证
         if(token){
             setTokenError({error:false})
         }else {
@@ -57,35 +61,37 @@ export default function RegisterBox({onRegister,changeCadeSide,onRef}:RegisterBo
             hasError=true;
         }
 
+        //检查用户名
         if (userName){
             setUserNameError({error:false})
         }else {
             setUserNameError({error:true,msg:"用户名不能为空"})
             hasError=true;
         }
-        if (eMail){
-            if (emailError.error){
-                hasError=true;
-            }else {
-                setEmailError({error:false})
-            }
 
-        }else {
-            setEmailError({error:true,msg:"电子邮件地址不能为空"})
+        //检查邮件
+        let emailError = checkEmail(eMail);
+        if (emailError.error){
             hasError=true;
         }
+        setEmailError(emailError)
 
-        if (password){
-            if (passwordError.error){
+
+        //检查密码
+        let [passwordError,strong] = checkPassword(password,8);
+        if (passwordError.error){
+            hasError=true;
+            setPasswordError(passwordError)
+        }else {
+            if (strong<3){
+                setPasswordError({error:true,msg:"必须包含大小写字母,特殊字符和数字"})
                 hasError=true;
             }else {
-                setPasswordError({error:false})
+                setPasswordError(passwordError)
             }
-
-        }else {
-            setPasswordError({error:true,msg:"密码不能为空"})
-            hasError=true;
         }
+
+        //检查二次输入密码
         if (!passwordConfirm){
             setPasswordConfirmError({error:true,msg:"请再次输入密码"})
             hasError=true;
@@ -96,9 +102,11 @@ export default function RegisterBox({onRegister,changeCadeSide,onRef}:RegisterBo
             setPasswordConfirmError({error:false})
         }
         if (hasError) return false;
+
+
         onRegister({
             userName:userName,
-            password:password,
+            password:Md5.hashStr(password),
             recaptchaToken:token || '',
             eMail:eMail
         });
@@ -123,60 +131,38 @@ export default function RegisterBox({onRegister,changeCadeSide,onRef}:RegisterBo
 
 
     useEffect(() => {
-        if (password){
-            if (password.length<=8){
+        let [passwordError,strong] = checkPassword(password,8);
+        switch (strong){
+            case 0:
                 setPasswordStrong(0)
-                setPasswordError({error:true,msg:"密码不能小于8位"})
-                setPasswordStrongColor("red")
-            }else {
-                let regexA = new RegExp('^(?=.*[a-z])');
-                let regexB = new RegExp('^(?=.*[A-Z])');
-                let regexC = new RegExp('^(?=.*\\d)');
-                let regexD = new RegExp('^(?=.*[!@#$%^&*,\\\\._])');
-                let a = 0;
-                if (regexA.test(password)){
-                    a++;
-                }
-                if (regexB.test(password)){
-                    a++;
-                }
-                if (regexC.test(password)){
-                    a++;
-                }
-                if (regexD.test(password)){
-                    a++;
-                }
-                switch (a){
-                    case 0:
-                        setPasswordStrong(0)
-                        setPasswordStrongColor(deepOrange[500])
-                        setPasswordError({error:true,msg:"必须包含大小写字母,特殊字符和数字"})
-                        break
-                    case 1:
-                        setPasswordStrong(33.33)
-                        setPasswordStrongColor(deepOrange[500])
-                        setPasswordError({error:true,msg:"必须包含大小写字母,特殊字符和数字"})
-                        break
-                    case 2:
-                        setPasswordStrong(66.66)
-                        setPasswordStrongColor(yellow[500])
-                        setPasswordError({error:false,msg:""})
-                        break
-                    case 3:
-                    default:
-                        setPasswordStrong(100)
-                        setPasswordStrongColor(lightGreen[500])
-                        setPasswordError({error:false,msg:""})
-                        break
+                setPasswordStrongColor(deepOrange[500])
+                break
+            case 1:
+                setPasswordStrong(33.33)
+                setPasswordStrongColor(deepOrange[500])
+                setPasswordError({error:true,msg:"必须包含大小写字母,特殊字符和数字"})
+                break
+            case 2:
+                setPasswordStrongColor(yellow[500])
+                setPasswordStrong(66.66)
+                break
+            default:
+                setPasswordStrongColor(green[500])
+                setPasswordStrong(100)
+        }
 
-                }
+
+        if (passwordError.error){
+            setPasswordError(passwordError)
+        }else {
+            if (strong<3){
+                setPasswordError({error:true,msg:"必须包含大小写字母,特殊字符和数字"})
+            }else {
+                setPasswordError(passwordError)
             }
-        }else{
-            setPasswordError({error:true,msg:"密码不能为空"})
         }
 
         if (passwordConfirm){
-            debugger
             if (passwordConfirm !== password){
                 setPasswordConfirmError({error:true,msg:"两次输入的密码不一致"})
             }else {
@@ -188,12 +174,8 @@ export default function RegisterBox({onRegister,changeCadeSide,onRef}:RegisterBo
     }, [password,passwordConfirm]);
 
     useEffect(() => {
-        let regexA = new RegExp('^ (.+)@ (S+) $');
-        if (regexA.test(eMail)){
-            setEmailError({error:false})
-        }else {
-            setEmailError({error:true,msg:"请输入正确的邮件地址"})
-        }
+        let errorType = checkEmail(eMail);
+        setEmailError(errorType);
     }, [eMail]);
 
     return (

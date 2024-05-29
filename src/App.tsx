@@ -8,11 +8,12 @@ import IndexPage from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import BottomBar from "./components/BottomBar/BottomBar";
 import {Button} from "@mui/material";
-import {NotFoundPage} from "./pages/NotFoundPage";
+import {NotFoundPage} from "./pages/ErrorPages/NotFoundPage";
 import BackGround from './assets/image/wallpaperMegamanEXE.jpg'
 import LoginBox, {RefProp} from "./components/login/LoginBox";
 import { SnackbarProvider } from 'notistack';
 import SettingPage from "./pages/Account/Settings/SettingPage";
+import FailCheckEmailPage from "./pages/ErrorPages/FailCheckEmailPage";
 
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
                 <Route path="/" element={<IndexPage minMainDivHeight={minMainDivHeight} isPhoneMode={isPhoneMode}/>}/>
                 <Route path="/login" element={<LoginPage minMainDivHeight={minMainDivHeight2} isPhoneMode={isPhoneMode}/>}/>
                 <Route path="/settings" element={<SettingPage minMainDivHeight={minMainDivHeight2} isPhoneMode={isPhoneMode}/>}/>
+                <Route path="/failCheckEmail" element={<FailCheckEmailPage  minMainDivHeight={minMainDivHeight2} isPhoneMode={isPhoneMode}/>}/>
                 <Route path={"*"} element={<NotFoundPage/>}/>
               </Routes>
             </div>
